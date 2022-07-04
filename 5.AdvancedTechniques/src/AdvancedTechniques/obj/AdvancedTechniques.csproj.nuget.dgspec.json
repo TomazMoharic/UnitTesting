@@ -1,0 +1,60 @@
+{
+  "format": 1,
+  "restore": {
+    "D:\\Code\\Unit testing course code\\5.AdvancedTechniques\\src\\AdvancedTechniques\\AdvancedTechniques.csproj": {}
+  },
+  "projects": {
+    "D:\\Code\\Unit testing course code\\5.AdvancedTechniques\\src\\AdvancedTechniques\\AdvancedTechniques.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "D:\\Code\\Unit testing course code\\5.AdvancedTechniques\\src\\AdvancedTechniques\\AdvancedTechniques.csproj",
+        "projectName": "AdvancedTechniques",
+        "projectPath": "D:\\Code\\Unit testing course code\\5.AdvancedTechniques\\src\\AdvancedTechniques\\AdvancedTechniques.csproj",
+        "packagesPath": "C:\\Users\\Lenka&Tomaž\\.nuget\\packages\\",
+        "outputPath": "D:\\Code\\Unit testing course code\\5.AdvancedTechniques\\src\\AdvancedTechniques\\obj\\",
+        "projectStyle": "PackageReference",
+        "configFilePaths": [
+          "C:\\Users\\Lenka&Tomaž\\AppData\\Roaming\\NuGet\\NuGet.Config"
+        ],
+        "originalTargetFrameworks": [
+          "net6.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net6.0": {
+            "targetAlias": "net6.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        }
+      },
+      "frameworks": {
+        "net6.0": {
+          "targetAlias": "net6.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Users\\Lenka&Tomaž\\.dotnet\\sdk\\6.0.300\\RuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}
