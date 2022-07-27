@@ -4,7 +4,9 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Microsoft.Data.Sqlite;
 using NSubstitute;
+using NSubstitute.Core;
 using NSubstitute.ExceptionExtensions;
+using NSubstitute.ReturnsExtensions;
 using Users.Api.Logging;
 using Users.Api.Models;
 using Users.Api.Repositories;
@@ -89,5 +91,81 @@ public class UserServiceTests
         await requestAction.Should()
             .ThrowAsync<SqliteException>().WithMessage("Something went wrong");
         _logger.Received(1).LogError(Arg.Is(sqliteException), Arg.Is("Something went wrong while retrieving all users"));
+    }
+    
+    //Authored code
+    [Fact]
+    public async Task GetByIdAsync_ShouldReturnAUser_WhenAUserExists()
+    {
+        // Arrange
+        Guid guid = Guid.NewGuid();
+
+        User user = new()
+        {
+            Id = guid,
+            FullName = "Funny Guy"
+        };
+
+        _userRepository.GetByIdAsync(guid).Returns(user);
+        
+        // Act
+       User? result = await _sut.GetByIdAsync(guid);
+
+        // Assert
+        result.Should().BeEquivalentTo(user);
+    }
+    
+    //Authored code
+    [Fact]
+    public async Task GetByIdAsync_ShouldReturnNull_WhenUserDoesNotExist ()
+    {
+        // Arrange
+        Guid guid = Guid.NewGuid();
+
+        _userRepository.GetByIdAsync(guid).ReturnsNull();
+
+        // Act
+        User? result = await _sut.GetByIdAsync(guid);
+
+        // Assert
+        result.Should().BeNull();
+    } 
+    
+    //Authored code
+    [Fact]
+    public async Task GetByIdAsync_ShouldLogCorrectMessages_WhenInvoked()
+    {
+        // Arrange
+        Guid guid = Guid.NewGuid();
+
+        _userRepository.GetByIdAsync(guid).Returns(new User());
+        
+        // Act
+        await _sut.GetByIdAsync(guid);
+
+        // Assert
+        _logger.Received(1).LogInformation(Arg.Is("Retrieving user with id: {0}"), Arg.Is(guid));
+        _logger.Received(1).LogInformation(Arg.Is("User with id {0} retrieved in {1}ms"), Arg.Is(guid), Arg.Any<long>());
+    }
+    
+    //Authored code
+    [Fact]
+    public async Task GetByIdAsync_ShouldLogCorrectMessageAndException_WhenExceptionIsThrown()
+    {
+        // Arrange
+        Guid guid = Guid.NewGuid();
+        
+        Exception exception = new("Something terrible happened!");
+
+        _userRepository.GetByIdAsync(guid).Throws(exception);
+        // Act
+        var action = async () => await _sut.GetByIdAsync(guid);
+
+        // Assert
+        await action.Should()
+            .ThrowAsync<Exception>().WithMessage("Something terrible happened!");
+        
+        _logger.Received(1)
+            .LogError(Arg.Is(exception), Arg.Is("Something went wrong while retrieving user with id {0}"), Arg.Is(guid));
     }
 }
