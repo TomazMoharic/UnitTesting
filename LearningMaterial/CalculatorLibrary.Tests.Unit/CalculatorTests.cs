@@ -1,4 +1,6 @@
-﻿using Xunit;
+﻿using System;
+using FluentAssertions;
+using Xunit;
 
 namespace CalculatorLibrary.Tests.Unit;
 
@@ -20,7 +22,8 @@ public class CalculatorTests
         var result = _sut.Add(a, b);
 
         // Assert
-        Assert.Equal(expected, result);
+        // Assert.Equal(expected, result);
+        result.Should().Be(expected);
     }
 
     [Theory]
@@ -35,7 +38,8 @@ public class CalculatorTests
         var result = _sut.Subtract(a, b);
 
         // Assert
-        Assert.Equal(expected, result);
+        // Assert.Equal(expected, result);
+        result.Should().Be(expected);
     }
     
     //Authored code
@@ -49,7 +53,8 @@ public class CalculatorTests
         var result = _sut.Multiply(a, b);
 
         // Assert
-        Assert.Equal(expected, result);
+        // Assert.Equal(expected, result);
+        result.Should().Be(expected);
     }
     
     //Authored code
@@ -60,11 +65,9 @@ public class CalculatorTests
     {
         // Act
         var result = _sut.Divide(a, b);
-
+        
         // Assert
-        Assert.Equal(expected, result);
+        // Assert.Equal(expected, result);
+        result.Should().Be(expected); 
     }
-    
-    
-    
 }
