@@ -158,6 +158,7 @@ public class UserServiceTests
         Exception exception = new("Something terrible happened!");
 
         _userRepository.GetByIdAsync(guid).Throws(exception);
+        
         // Act
         var action = async () => await _sut.GetByIdAsync(guid);
 
@@ -167,5 +168,142 @@ public class UserServiceTests
         
         _logger.Received(1)
             .LogError(Arg.Is(exception), Arg.Is("Something went wrong while retrieving user with id {0}"), Arg.Is(guid));
+    }
+    
+    //Authored code
+    [Fact]
+    public async Task CreateAsync_ShouldCreateAUser_WhenUserCreateDetailsAreValid()
+    {
+        // check this against the solution, it feels wrong
+        
+        // Arrange
+        User userModel = new()
+        {
+            FullName = "Funny Guy",
+        };
+
+        _userRepository.CreateAsync(userModel).Returns(true);
+        
+        // Act
+        bool response = await _sut.CreateAsync(userModel);
+        
+        // Assert
+        // response.Should().Be(true);
+        response.Should().BeTrue();
+    }
+    
+    //Authored code
+    [Fact]
+    public async Task CreatAsync_ShouldLogTheCorrectMessage_WhenCreatingAUser()
+    {
+        // Arrange
+        User userModel = new()
+        {
+            FullName = "Funny Guy",
+        };
+
+        _userRepository.CreateAsync(userModel).Returns(new bool());
+        
+        // Act
+        await _sut.CreateAsync(userModel);
+        
+        // Assert
+        _logger.Received(1).LogInformation(Arg.Is("Creating user with id {0} and name: {1}"), Arg.Is(userModel.Id), Arg.Is(userModel.FullName));
+        _logger.Received(1).LogInformation(Arg.Is("User with id {0} created in {1}ms"), Arg.Is(userModel.Id), Arg.Any<long>());
+    }
+    
+    //Authored code
+    [Fact]
+    public async Task CreateAsync_ShouldLogTheCorrectMessage_WhenAnExceptionIsThrown()
+    {
+        // Arrange
+        User userModel = new()
+        {
+            FullName = "Funny Guy",
+        };
+        
+        Exception exception = new("Something terrible happened!");
+        
+        _userRepository.CreateAsync(userModel).Throws(exception);
+        
+        // Act
+        var action = async () => await _sut.CreateAsync(userModel);
+
+        // Assert
+        await action.Should().ThrowAsync<Exception>().WithMessage("Something terrible happened!");
+        
+        _logger.Received(1).LogError(Arg.Is(exception), Arg.Is("Something went wrong while creating a user"));
+    }
+    
+    //Authored code
+    [Fact]
+    public async Task DeleteByIdAsync_ShouldDeleteAUser_WhenTheUserExists()
+    {
+        // Arrange
+        Guid guid = Guid.NewGuid();
+
+        _userRepository.DeleteByIdAsync(guid).Returns(true);
+
+        // Act
+        bool result = await _sut.DeleteByIdAsync(guid);
+        
+        // Assert
+        // result.Should().Be(true);
+        result.Should().BeTrue();
+    }
+    
+    //Authored code
+    [Fact]
+    public async Task DeleteByIdAsync_ShouldNotDeleteAUser_WhenTheUserDoesNotExist()
+    {
+        // Arrange
+        Guid guid = Guid.NewGuid();
+
+        _userRepository.DeleteByIdAsync(guid).Returns(false);
+
+        // Act
+        bool result = await _sut.DeleteByIdAsync(guid);
+        
+        // Assert
+        // result.Should().Be(false);
+        result.Should().BeFalse();
+    }
+    
+    //Authored code
+    [Fact]
+    public async Task DeleteByIdAsync_ShouldLogTheCorrectMessage_WhenDeletingAUser()
+    {
+        // Arrange
+        Guid guid = Guid.NewGuid();
+
+        _userRepository.DeleteByIdAsync(guid).Returns(new bool());
+
+        // Act
+        await _sut.DeleteByIdAsync(guid);
+        
+        // Assert
+        _logger.Received(1).LogInformation("Deleting user with id: {0}", Arg.Is(guid));
+        _logger.Received(1).LogInformation("User with id {0} deleted in {1}ms", Arg.Is(guid), Arg.Any<long>());
+        
+    }
+    
+    //Authored code
+    [Fact]
+    public async Task DeleteByIdAsync_ShouldLogACorrectMessage_WhenExceptionIsThrown()
+    {
+        // Arrange  
+        Guid guid = Guid.NewGuid();
+
+        Exception exception = new("Something awful happened.");
+        
+        _userRepository.DeleteByIdAsync(guid).Throws(exception);
+        
+        // Act
+        var action = async () => await _sut.DeleteByIdAsync(guid);
+        
+        // Assert
+        await action.Should().ThrowAsync<Exception>().WithMessage("Something awful happened.");
+        
+        _logger.Received(1).LogError(exception, "Something went wrong while deleting user with id {0}", Arg.Is(guid));
     }
 }
