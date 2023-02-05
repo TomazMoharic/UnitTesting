@@ -92,4 +92,87 @@ public class UserControllerTests
         result.StatusCode.Should().Be(200);
         result.Value.As<IEnumerable<UserResponse>>().Should().BeEquivalentTo(usersResponse);
     }
+
+    [Fact]
+    public async Task Create_ShouldReturnAUser_WhenAUserWasCreated()
+    {
+        // Arrange
+        CreateUserRequest requestModel = new()
+        {
+            FullName = "Funny Guy"
+        };
+        
+        User user = new()
+        {
+            FullName = requestModel.FullName
+        };
+
+        _userService.CreateAsync(Arg.Do<User>(x => user = x)).Returns(true);
+
+        // Act
+        var result = (CreatedAtActionResult)await _sut.Create(requestModel);
+
+        // Assert
+        UserResponse responseModel = user.ToUserResponse();
+        
+        result.StatusCode.Should().Be(201);
+        result.Value.Should().BeEquivalentTo(responseModel);
+        result.RouteValues!["id"].Should().BeEquivalentTo(user.Id);
+    }
+
+    [Fact]
+    public async Task Create_ShouldReturn400_WhenTheUserWasntCreated ()
+    {
+        // Arrange
+        CreateUserRequest requestModel = new()
+        {
+            FullName = "Funny Guy"
+        };
+        //
+        // User user = new()
+        // {
+        //     FullName = requestModel.FullName
+        // };
+        
+        _userService.CreateAsync(Arg.Any<User>()).Returns(false);
+        
+        // Act
+        var response = (BadRequestResult)await _sut.Create(requestModel);
+        
+        // Assert
+        response.StatusCode.Should().Be(400);
+        response.Should().BeOfType(typeof(BadRequestResult));
+    }
+
+    [Fact]
+    public async Task DeleteById_ShouldReturn200_WhenUserWasDeletedSuccessfully()
+    {
+        // Arrange
+        Guid guid = Guid.NewGuid();
+
+        _userService.DeleteByIdAsync(guid).Returns(true);
+        
+        // Act
+        var response = (OkResult)await _sut.DeleteById(guid);
+
+        // Assert
+        response.StatusCode.Should().Be(200);
+        response.Should().BeOfType(typeof(OkResult));
+    }
+    
+    [Fact]
+    public async Task DeleteById_ShouldReturn404_WhenUserWasNotDeleted()
+    {
+        // Arrange
+        Guid guid = Guid.NewGuid();
+
+        _userService.DeleteByIdAsync(guid).Returns(false);
+        
+        // Act
+        var response = (NotFoundResult)await _sut.DeleteById(guid);
+
+        // Assert
+        response.StatusCode.Should().Be(404);
+        response.Should().BeOfType(typeof(NotFoundResult));
+    }
 }
